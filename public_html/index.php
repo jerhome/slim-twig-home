@@ -70,7 +70,7 @@ $app->get('/', function () use ($app) {
 $app->get('/info', function () use ($app) {
 	ob_start();
 	phpinfo();
-	$body = ob_get_flush();
+	$body = ob_get_clean();
 	$app->response->body($body);
 });
 
