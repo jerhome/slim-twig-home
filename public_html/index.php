@@ -16,7 +16,7 @@ $app->view()->parserOptions = [
     'cache' => '../app/data/cache',
 ];
 
-$get_sites = function($app) { 
+$app->getSites = $app->container->protect(function($app) { 
     $sites = [];
     if ($handle = opendir($app->environment()['sites_path'])) {
         $i = 0;
@@ -30,9 +30,9 @@ $get_sites = function($app) {
         }
     }
     return $sites;    
-};
+});
 
-$get_sys_out_array = function($command) {
+$app->getSysOutArray = $app->container->protect(function($command) {
     exec($command, $out);
     foreach ($out as $key => $value) {
         $value = explode(':', $value);
@@ -40,9 +40,9 @@ $get_sys_out_array = function($command) {
         unset($out[$key]);
     }
     return $out;
-};
+});
 
-$get_env = function($app) {
+$app->getEnv = $app->container->protect(function($app) {
     return [
         'os.kernel' => php_uname('s').' '.php_uname('r').' '.php_uname('m'),
         'php.version' => phpversion(),
@@ -50,13 +50,19 @@ $get_env = function($app) {
         'slim.version' => $app::VERSION,
         'slim.mode' => $app->getMode(),
     ];
-};
+});
 
-$app->get('/', function () use ($app, $get_sites, $get_env, $get_sys_out_array) {
+$app->get('/', function () use ($app) {
+    $get_sites = $app->getSites;
     $sites = $get_sites($app);
+    
+    $get_sys_out_array = $app->getSysOutArray;
     $cpu = $get_sys_out_array('lscpu');
     $os_release = $get_sys_out_array('lsb_release -a');
+    
+    $get_env = $app->getEnv;
     $env = $get_env($app) + $os_release + $cpu;
+    
     $body = $app->view()->render('home.twig', ['sites' => $sites, 'env' => $env]);
     $app->response->body($body);
 });
