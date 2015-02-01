@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>jerhome.fr</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <link rel="icon" type="image/jpeg" href="http://www.gravatar.com/avatar/3a09c9601f93eb44775334056f26d319.png" />
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <section id="menu">
+            <h2>Sites</h2>
+            <div class="well">
+            {% for site in sites %}
+
+                <button onclick="window.location='{{ site.1 }}';" class="btn btn-primary btn-lg btn-block">{{ site.0 }}</button>
+            {% endfor %}
+
+            </div>
+        </section>
+        <section id="env">
+            <h2>Env</h2>
+            <table class="table">
+            {% for key, value in env %}
+
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+
+            </table>
+        </section>
+    </body>
+</html>
