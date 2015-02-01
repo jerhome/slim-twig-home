@@ -6,6 +6,7 @@ $app = new \Slim\Slim([
     'view' => new \Slim\Views\Twig(),
 ]);
 
+$app->environment()['os_release_cmd'] = 'cat /etc/slackware-version';
 $app->environment()['sites_path'] = '/var/www/htdocs/';
 $app->environment()['sites_excluded'] = [
 	'.', '..', 'htdig', 'index.html', 'manual', 'slim'
@@ -55,14 +56,12 @@ $app->getEnv = $app->container->protect(function($app) {
 $app->get('/', function () use ($app) {
     $get_sites = $app->getSites;
     $sites = $get_sites($app);
-    
+    $os_release = ['os.release' => exec($app->environment()['os_release_cmd'])];    
     $get_sys_out_array = $app->getSysOutArray;
     $cpu = $get_sys_out_array('lscpu');
-    $os_release = $get_sys_out_array('lsb_release -a');
-    
     $get_env = $app->getEnv;
+
     $env = $get_env($app) + $os_release + $cpu;
-    
     $body = $app->view()->render('home.twig', ['sites' => $sites, 'env' => $env]);
     $app->response->body($body);
 });
